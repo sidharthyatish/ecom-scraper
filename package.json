@@ -1,0 +1,14 @@
+{
+  "name": "ecom-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "\"echo \\\"hai\\\" && exit 1\""
+  },
+  "author": "Sidharth Yatish",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
