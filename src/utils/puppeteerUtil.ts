@@ -1,8 +1,9 @@
-import { Browser, Page } from "puppeteer";
+import { Browser, Page, Product } from "puppeteer";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { credentials } from "../config/credentials";
 import { websites } from "../config/selectors";
+import { Order } from "../types/product";
 
 const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 OPR/109.0.0.0";
 const MAX_PRODUCTS = 10;
@@ -33,20 +34,27 @@ export async function login(page: Page, websiteName: keyof typeof websites): Pro
   return page;
 }
 
-async function getProductsInGivenPage(page:Page) {
-  return await page.$$eval('.ProductList-details', products => {
-    return products.map(product => {
-
-      const brandName = product.querySelector('.ProductList-bold .Text-Text')?.textContent;
-      const productName = product.querySelector('.ProductList-productName .Text-Text')?.textContent;
-
-      return {
-        brandName: brandName,
-        productName: productName
-      }
-    });
-
-  });
+async function getProductsInGivenPage(page:Page, brandSelector: string, productNameSelector: string):Promise<Order[]> {
+  try{
+    return await page.$$eval('.ProductList-details', (products,brandSelector,productNameSelector) => {
+      return products.map(product => {
+  
+        const brandName = product.querySelector(brandSelector)?.textContent;
+        const productName = product.querySelector(productNameSelector)?.textContent;
+  
+        return {
+          brandName: brandName || "",
+          productName: productName || "",
+        }
+      });
+  
+    }, brandSelector,productNameSelector);
+  }
+  catch(error){
+    console.error(`Error getting products in given page : ${error}`);
+    return [];
+  }
+  
   
 }
 export async function getLatestOrders(page: Page, websiteName: keyof typeof websites) {
@@ -57,18 +65,17 @@ export async function getLatestOrders(page: Page, websiteName: keyof typeof webs
     
     let pageNumber = 1;
     await page.goto(website.orders.url);
-    await page.waitForSelector('.pagination-pagination');
-    const paginationString = await page.$eval('.pagination-pagination > span', span => span.innerText);
-    const totalProductCount = parseInt(paginationString.split(" ").at(-1) || "0");
+    await page.waitForSelector(website.orders.pagination);
+    const paginationString: string = await page.$eval(`${website.orders.pagination} > span`, span => span.innerText);
+    const totalProductCount: number = parseInt(paginationString.split(" ").at(-1) || "0");
     const maxSelectableProductsCount = Math.min(totalProductCount,MAX_PRODUCTS);
   
 
     while (allProducts.length <maxSelectableProductsCount) {
       await page.goto(website.orders.url+`?p=${pageNumber}`);
-      await page.waitForSelector('.ProductList-details')
+      await page.waitForSelector(website.orders.products.item)
 
-      const subSetOfProducts = await getProductsInGivenPage(page);
-      console.log(`Ordered products : ${JSON.stringify(subSetOfProducts)}`);
+      const subSetOfProducts = await getProductsInGivenPage(page, website.orders.products.brand, website.orders.products.name);
       if(subSetOfProducts.length > 0){
         allProducts = allProducts.concat(subSetOfProducts);
         pageNumber++;
@@ -78,13 +85,9 @@ export async function getLatestOrders(page: Page, websiteName: keyof typeof webs
       }
     }
     
-
-    console.log(`Total products I am gonna return : ${JSON.stringify(allProducts.length)}`);
-    
-    
   }
   catch(error){
-    console.error(`Error getting latest orders : ${error}`);
+    console.error(`Error getting latest orders from order page: ${error}`);
     
   }
   

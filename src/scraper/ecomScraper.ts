@@ -6,8 +6,10 @@ export async function getOrderedProducts() {
   const browser: Browser = await launchBrowser();
   try {
     const newPage = await createNewPage(browser);
-    // const homePage = await login(newPage, WEBSITE_NAME);
-    const ordersPage = await getLatestOrders(newPage, WEBSITE_NAME);
+    // await login(newPage, WEBSITE_NAME);
+    const latestOrders = await getLatestOrders(newPage, WEBSITE_NAME);
+    console.log(`Recent orders : ${JSON.stringify(latestOrders)}`);
+    
     
   } catch (error) {
     throw new Error("Failed fetching products");
