@@ -1,8 +1,8 @@
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { getOrderedProducts } from './scraper/ecomScraper';
 
-
-(async () => {
+const oldMethod = async () => {
   // Launch the browser and open a new blank page
   puppeteer.use(StealthPlugin());
   const browser = await puppeteer.launch({headless: false});
@@ -52,4 +52,9 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
   // console.log('The title of this blog post is "%s".', fullTitle);
 
   // await browser.close();
-})();
+}
+(
+  async() =>{
+    await getOrderedProducts();
+  }
+)();
