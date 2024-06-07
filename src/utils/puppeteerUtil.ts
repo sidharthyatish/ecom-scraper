@@ -90,6 +90,5 @@ export async function getLatestOrders(page: Page, websiteName: keyof typeof webs
     console.error(`Error getting latest orders from order page: ${error}`);
     
   }
-  
-    return allProducts;
+  return allProducts;
 }

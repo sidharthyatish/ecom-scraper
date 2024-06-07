@@ -14,4 +14,7 @@ export async function getOrderedProducts() {
   } catch (error) {
     throw new Error("Failed fetching products");
   }
+  finally{
+    await browser.close();
+  }
 }
