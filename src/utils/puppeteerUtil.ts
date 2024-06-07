@@ -23,15 +23,18 @@ export async function createNewPage(browser: Browser): Promise<Page> {
   return page;
 }
 
-export async function login(page: Page, websiteName: keyof typeof websites): Promise<Page> {
+export async function login(page: Page, websiteName: keyof typeof websites): Promise<void> {
   const website = websites[websiteName];
-  await page.goto(website.login.url);
-  await page.type(website.login.email, credentials.userName);
-  await page.type(website.login.password, credentials.passWord);
-  await page.click(website.login.submit);
-  await page.waitForSelector(website.home.profile);
-
-  return page;
+  try {
+    await page.goto(website.login.url);
+    await page.type(website.login.email, credentials.userName);
+    await page.type(website.login.password, credentials.passWord);
+    await page.click(website.login.submit);
+    await page.waitForSelector(website.home.profile);
+  }
+  catch(error){
+    console.error(`Login failed : ${error}`);
+  }
 }
 
 async function getProductsInGivenPage(page:Page, brandSelector: string, productNameSelector: string):Promise<Order[]> {
