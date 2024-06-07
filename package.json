@@ -4,13 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "\"echo \\\"hai\\\" && exit 1\""
+    "lint": "npx eslint . --ext .ts",
+    "build": "npm install && npx tsc",
+    "start": "node ./build/index.js"
   },
   "author": "Sidharth Yatish",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@types/eslint__js": "^8.42.3",
     "esbuild": "0.21.4",
-    "typescript": "^5.4.5"
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.12.0"
   },
   "dependencies": {
     "puppeteer": "^22.10.0",

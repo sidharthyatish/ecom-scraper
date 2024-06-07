@@ -1,4 +1,4 @@
-import { Browser, Page, Product } from "puppeteer";
+import { Browser, Page } from "puppeteer";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { credentials } from "../config/credentials";
@@ -61,7 +61,7 @@ async function getProductsInGivenPage(page:Page, brandSelector: string, productN
   
 }
 export async function getLatestOrders(page: Page, websiteName: keyof typeof websites) {
-  let allProducts:any[] = [];
+  let allProducts:Order[] = [];
   try{
     const website = websites[websiteName];
     
